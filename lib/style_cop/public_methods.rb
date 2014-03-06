@@ -29,7 +29,9 @@ module StyleCop
       structure = build_structure(dom, base, {})
       rules = build_rules(structure, base, '', []).map{|r| r.gsub(" > .#{base} > ",'')}
 
-      has_nested_children rules
+      rules.each do |rule|
+        has_child rule
+      end
     end
 
     def build_rules(structure, level, rule_base, rules)
