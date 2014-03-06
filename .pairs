@@ -1,0 +1,9 @@
+pairs:
+  dt: David Tegdin; dtegdin
+  wp: Ward Penney; wpenney
+
+email:
+  prefix: style_cop+pair
+  domain: pivotallabs.com
+
+global: true
