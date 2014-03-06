@@ -21,7 +21,7 @@ module StyleCop
     end
 
     ### Need to be refactored into objects ###
-    def register_style_structure_for(styleguide_path, text_context)
+    def register_style_structure_for(url, text_context)
       text_context.visit url
 
       base = text_context.page.all('.style-cop-pattern').first.native.attributes['class'].value.gsub(' style-cop-pattern', '')
