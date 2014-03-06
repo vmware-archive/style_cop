@@ -1,10 +1,18 @@
 # style_cop
-Enforce markup structure for front-end patterns via Rspec and Capybara. You spent all that time making your CSS play nicely. If all developers use the markup correctly, then it will render beautifully! 
+Style Cop helps you enforce markup structure for front-end patterns via Rspec and Capybara. You spent all that time making your CSS play nicely. If all developers use the markup correctly, then it will render beautifully! 
 
-Other benefits:
+## Hypothesis
 
-* Creates a momentum to "use or improve" front-end CSS patterns, rather than page-overriding to tweak
-* Test-Drive creating your markup! Use the pattern, assert on it and fix the reds!
+1. We believe developers / designers have a problem sticiking w established DOM patterns, rather than page-overriding to tweak style.
+2. We can fix it by creating momentum to "use or improve" front-end CSS patterns by breaking the build if a pattern is used incorrectly
+3. We know we are right if a team thinks this is a good idea and uses it on a project, and they tweet a link to the repo.
+
+## MVP
+
+What's the least amount of work we can do to in/vadidate this hypothesis?
+
+* A gem that targets Rails projects that use Hologram
+* It automagically "enforces" DOM and style as defined in the Hologram live style guide
 
 ## Installation
 
