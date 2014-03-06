@@ -5,7 +5,6 @@ describe StyleCop::PublicMethods do
   let(:selector) {'.foo'}
 
   describe 'has_child' do
-
     it 'calls add_rule on RegisterStyle' do
       expect(StyleCop::RegisterStyle).to receive(:add_rule).with('> .foo')
       has_child selector
