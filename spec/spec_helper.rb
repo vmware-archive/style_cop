@@ -4,6 +4,7 @@ require 'bundler/setup'
 require 'pry'
 require 'style_cop'
 require 'rspec'
+require 'capybara'
 
 ENV['test_run'] = true.to_s
 

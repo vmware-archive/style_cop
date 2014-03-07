@@ -10,7 +10,8 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://rubygems.org/gems/style_cop'
   s.license     = 'MIT'
 
-  s.add_development_dependency "rspec", "~> 2.14.0"
-  s.add_development_dependency "xpath", "~> 2.0.0"
-  s.add_development_dependency "pry", "~> 0.9.12.6"
+  s.add_dependency "rspec"
+  s.add_dependency "capybara-webkit"
+
+  s.add_development_dependency "pry"
 end
