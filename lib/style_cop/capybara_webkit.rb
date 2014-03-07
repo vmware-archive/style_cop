@@ -1,10 +1,9 @@
 RSpec.configure do |config|
-  config.before(:each, type: :style_cop) do
+  config.before(:each, style_cop: true) do
     Capybara.current_driver = :webkit
   end
 
-  config.after(:each, type: :style_cop) do
+  config.after(:each, style_cop: true) do
     Capybara.use_default_driver
   end
 end
-

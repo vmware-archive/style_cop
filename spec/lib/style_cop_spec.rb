@@ -6,7 +6,7 @@ describe StyleCop do
       expect(Capybara.current_driver).to_not eq(:webkit)
     end
 
-    it "changes to current driver for style cop specs", type: :style_cop do
+    it "changes to current driver for style cop specs", style_cop: true do
       expect(Capybara.current_driver).to eq(:webkit)
     end
   end
