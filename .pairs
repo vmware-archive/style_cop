@@ -1,6 +1,7 @@
 pairs:
   dt: David Tegdin; dtegdin
   wp: Ward Penney; wpenney
+  jn: Jordi Noguera; jordi
 
 email:
   prefix: style_cop+pair
