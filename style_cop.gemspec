@@ -14,4 +14,5 @@ Gem::Specification.new do |s|
   s.add_dependency "capybara-webkit"
 
   s.add_development_dependency "pry"
+  s.add_development_dependency "sinatra"
 end
