@@ -8,9 +8,27 @@ module StyleCop
       Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }]
     end
 
+    def key
+      if class_name
+        ".#{class_name.gsub(' ', '.')}"
+      elsif id
+        "##{id}"
+      else
+        selector.tag_name
+      end
+    end
+
     private
 
     attr_reader :selector
+
+    def class_name
+      selector['class']
+    end
+
+    def id
+      selector['id']
+    end
 
     def css
       session.evaluate_script(computed_style_script)["cssText"]
