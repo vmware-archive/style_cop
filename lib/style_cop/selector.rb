@@ -8,6 +8,16 @@ module StyleCop
       Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }]
     end
 
+    def key
+      if selector['class']
+        ".#{selector['class'].gsub(' ', '.')}"
+      elsif selector['id']
+        "##{selector['id']}"
+      else
+        selector.tag_name
+      end
+    end
+
     private
 
     attr_reader :selector
