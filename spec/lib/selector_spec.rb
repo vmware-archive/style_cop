@@ -6,23 +6,16 @@ module StyleCop
       let(:page) { FakePage.new(html) }
 
       let(:html) do
-        %{<html>
-            <head>
-              <style>
-                .selector {
-                  font-size: 4px;
-                }
-
-                .selector.second {
-                  font-size: 6px;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="selector first"></div>
-              <div class="selector second"></div>
-            </body>
-          </html>}
+        create_html({
+          style: %{
+            .selector { font-size: 4px; }
+            .selector.second { font-size: 6px; }
+          },
+            body: %{
+            <div class="selector first"></div>
+            <div class="selector second"></div>
+          }
+        })
       end
 
       it "returns a hash containing computed style" do
