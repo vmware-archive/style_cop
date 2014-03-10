@@ -1,11 +1,15 @@
 module StyleCop
   class Selector
+    EXCLUDED_KEYS = ["width", "height", "top", "bottom", "right", "left"]
+
     def initialize(selector)
       @selector = selector
     end
 
     def computed_style
-      Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }]
+      style_hash.tap do |hash|
+        EXCLUDED_KEYS.each { |key| hash.delete(key) }
+      end
     end
 
     def key
@@ -21,6 +25,10 @@ module StyleCop
     private
 
     attr_reader :selector
+
+    def style_hash
+      Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }]
+    end
 
     def css
       session.evaluate_script(computed_style_script)["cssText"]

@@ -19,15 +19,25 @@ module StyleCop
       end
 
       it "returns a hash containing computed style" do
-        capybara_selector = page.find('.selector.first')
-        selector = Selector.new(capybara_selector)
+        selector = Selector.new(page.find('.selector.first'))
         expect(selector.computed_style["font-size"]).to eq("4px")
       end
 
       it "returns the correct style for elements with the same class" do
-        capybara_selector = page.find('.selector.second')
-        selector = Selector.new(capybara_selector)
+        selector = Selector.new(page.find('.selector.second'))
         expect(selector.computed_style["font-size"]).to eq("6px")
+      end
+
+      context "excluded keys" do
+        let(:selector) { Selector.new(page.find(".selector.first")) }
+        subject { selector.computed_style }
+
+        it { should_not have_key("width") }
+        it { should_not have_key("height") }
+        it { should_not have_key("top") }
+        it { should_not have_key("bottom") }
+        it { should_not have_key("right") }
+        it { should_not have_key("left") }
       end
     end
 
