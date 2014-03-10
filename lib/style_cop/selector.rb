@@ -23,16 +23,12 @@ module StyleCop
     end
 
     def ==(other)
-      computed_style == other.computed_style &&
-        structure == other.structure &&
-        children == other.children
+      SelectorDifference.new(self, other).empty?
     end
 
     def structure
       { key.gsub(".style-cop-pattern", "") => children.map(&:structure) }
     end
-
-    protected
 
     def children
       selector.all(:xpath, "#{selector.path}/*").map do |child|

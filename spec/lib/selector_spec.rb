@@ -78,97 +78,25 @@ module StyleCop
     end
 
     describe "#==" do
-      let(:first_selector) { Selector.new page.all(".selector").first }
-      let(:last_selector) { Selector.new page.all(".selector").last }
-      let(:page) { FakePage.new(html) }
+      let(:selector) { Selector.new(double) }
 
-      context "when two selectors have same css" do
-        let(:html) do
-          create_html({
-            body: %{
-              <div class="selector"></div>
-              <div class="selector"></div>
-            }
-          })
-        end
+      before do
+        allow(SelectorDifference).to receive(:new).and_return(selector_difference)
+      end
+
+      context "an emtpy selector difference" do
+        let(:selector_difference) { double(SelectorDifference, empty?: true) }
 
         it "returns true" do
-          expect(first_selector).to eq(last_selector)
+          expect(selector).to eq double(Selector)
         end
       end
 
-      context "when two selectors don't have same css" do
-        let(:html) do
-          create_html({
-            body: %{
-              <div class="selector"></div>
-              <div class="selector" style="font-size: 100px"></div>
-            }
-          })
-        end
+      context "a non empty selector difference" do
+        let(:selector_difference) { double(SelectorDifference, empty?: false) }
 
         it "returns false" do
-          expect(first_selector).to_not eq(last_selector)
-        end
-      end
-
-      context "when two selectors have same structure" do
-        let(:html) do
-          create_html({
-            body: %{
-              <div class="selector"><div class="child2"></div></div>
-              <div class="selector"><div class="child2"></div></div>
-            }
-          })
-        end
-
-        it "returns true" do
-          expect(first_selector).to eq(last_selector)
-        end
-      end
-
-      context "when two selectors don't have same structure" do
-        let(:html) do
-          create_html({
-            body: %{
-              <div class="selector"></div>
-              <div class="selector"><div class="child2"></div></div>
-            }
-          })
-        end
-
-        it "returns false" do
-          expect(first_selector).to_not eq(last_selector)
-        end
-      end
-
-      context "when two selectors children have same css" do
-        let(:html) do
-          create_html({
-            body: %{
-              <div class="selector"><div class="child2"></div></div>
-              <div class="selector"><div class="child2"></div></div>
-            }
-          })
-        end
-
-        it "returns false" do
-          expect(first_selector).to eq(last_selector)
-        end
-      end
-
-      context "when two selectors children don't have same css" do
-        let(:html) do
-          create_html({
-            body: %{
-              <div class="selector"><div class="child2"></div></div>
-              <div class="selector"><div class="child2" style="font-size:100px"></div></div>
-            }
-          })
-        end
-
-        it "returns false" do
-          expect(first_selector).to_not eq(last_selector)
+          expect(selector).to_not eq double(Selector)
         end
       end
     end
