@@ -78,16 +78,16 @@ module StyleCop
     end
 
     describe "#==" do
-      let(:first_selector) { Selector.new page.find(".selector.first") }
-      let(:last_selector) { Selector.new page.find(".selector.second") }
+      let(:first_selector) { Selector.new page.all(".selector").first }
+      let(:last_selector) { Selector.new page.all(".selector").last }
       let(:page) { FakePage.new(html) }
 
       context "when two selectors have same css" do
         let(:html) do
           create_html({
             body: %{
-              <div class="selector first"></div>
-              <div class="selector second"></div>
+              <div class="selector"></div>
+              <div class="selector"></div>
             }
           })
         end
@@ -101,8 +101,8 @@ module StyleCop
         let(:html) do
           create_html({
             body: %{
-              <div class="selector first"></div>
-              <div class="selector second" style="font-size: 100px"></div>
+              <div class="selector"></div>
+              <div class="selector" style="font-size: 100px"></div>
             }
           })
         end
@@ -110,6 +110,63 @@ module StyleCop
         it "returns false" do
           expect(first_selector).to_not eq(last_selector)
         end
+      end
+
+      context "when two selectors have same structure" do
+        let(:html) do
+          create_html({
+            body: %{
+              <div class="selector"><div class="child2"></div></div>
+              <div class="selector"><div class="child2"></div></div>
+            }
+          })
+        end
+
+        it "returns true" do
+          expect(first_selector).to eq(last_selector)
+        end
+      end
+
+      context "when two selectors don't have same structure" do
+        let(:html) do
+          create_html({
+            body: %{
+              <div class="selector"></div>
+              <div class="selector"><div class="child2"></div></div>
+            }
+          })
+        end
+
+        it "returns false" do
+          expect(first_selector).to_not eq(last_selector)
+        end
+      end
+    end
+
+    describe "#structure" do
+      let(:html) do
+        create_html({
+          body: %{
+              <div class="selector">
+                <div class="child1">
+                  <div class="child3"></div>
+                </div>
+                <div class="child2"></div>
+              </div>
+          }
+        })
+      end
+
+      let(:page) { FakePage.new(html) }
+      let(:selector) { Selector.new page.find(".selector") }
+
+      it "returns a hash with its key and children" do
+        expect(selector.structure).to eq({
+          ".selector" => [
+            {".child1" => [{".child3" => [] }]},
+            {".child2" => []}
+          ]
+        })
       end
     end
   end
