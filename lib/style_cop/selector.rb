@@ -23,13 +23,13 @@ module StyleCop
     end
 
     def ==(other)
-      computed_style == other.computed_style && 
+      computed_style == other.computed_style &&
         structure == other.structure &&
         children == other.children
     end
 
     def structure
-      { key => children.map(&:structure) }
+      { key.gsub(".style-cop-pattern", "") => children.map(&:structure) }
     end
 
     protected

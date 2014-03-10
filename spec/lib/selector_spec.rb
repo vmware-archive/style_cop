@@ -177,9 +177,9 @@ module StyleCop
       let(:html) do
         create_html({
           body: %{
-              <div class="selector">
+              <div class="selector style-cop-pattern">
                 <div class="child1">
-                  <div class="child3"></div>
+                  <div class="child3 style-cop-pattern"></div>
                 </div>
                 <div class="child2"></div>
               </div>
