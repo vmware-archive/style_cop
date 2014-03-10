@@ -22,6 +22,10 @@ module StyleCop
       end
     end
 
+    def ==(other)
+      computed_style == other.computed_style
+    end
+
     private
 
     attr_reader :selector

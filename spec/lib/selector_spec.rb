@@ -76,5 +76,41 @@ module StyleCop
         end
       end
     end
+
+    describe "#==" do
+      let(:first_selector) { Selector.new page.find(".selector.first") }
+      let(:last_selector) { Selector.new page.find(".selector.second") }
+      let(:page) { FakePage.new(html) }
+
+      context "when two selectors have same css" do
+        let(:html) do
+          create_html({
+            body: %{
+              <div class="selector first"></div>
+              <div class="selector second"></div>
+            }
+          })
+        end
+
+        it "returns true" do
+          expect(first_selector).to eq(last_selector)
+        end
+      end
+
+      context "when two selectors don't have same css" do
+        let(:html) do
+          create_html({
+            body: %{
+              <div class="selector first"></div>
+              <div class="selector second" style="font-size: 100px"></div>
+            }
+          })
+        end
+
+        it "returns false" do
+          expect(first_selector).to_not eq(last_selector)
+        end
+      end
+    end
   end
 end
