@@ -141,6 +141,36 @@ module StyleCop
           expect(first_selector).to_not eq(last_selector)
         end
       end
+
+      context "when two selectors children have same css" do
+        let(:html) do
+          create_html({
+            body: %{
+              <div class="selector"><div class="child2"></div></div>
+              <div class="selector"><div class="child2"></div></div>
+            }
+          })
+        end
+
+        it "returns false" do
+          expect(first_selector).to eq(last_selector)
+        end
+      end
+
+      context "when two selectors children don't have same css" do
+        let(:html) do
+          create_html({
+            body: %{
+              <div class="selector"><div class="child2"></div></div>
+              <div class="selector"><div class="child2" style="font-size:100px"></div></div>
+            }
+          })
+        end
+
+        it "returns false" do
+          expect(first_selector).to_not eq(last_selector)
+        end
+      end
     end
 
     describe "#structure" do

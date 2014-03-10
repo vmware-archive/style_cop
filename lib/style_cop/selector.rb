@@ -23,22 +23,26 @@ module StyleCop
     end
 
     def ==(other)
-      computed_style == other.computed_style && structure == other.structure
+      computed_style == other.computed_style && 
+        structure == other.structure &&
+        children == other.children
     end
 
     def structure
       { key => children.map(&:structure) }
     end
 
-    private
-
-    attr_reader :selector
+    protected
 
     def children
       selector.all(:xpath, "#{selector.path}/*").map do |child|
         Selector.new(child)
       end
     end
+
+    private
+
+    attr_reader :selector
 
     def style_hash
       Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }]
