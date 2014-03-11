@@ -6,12 +6,6 @@ module StyleCop
       @selector = selector
     end
 
-    def computed_style
-      style_hash.tap do |hash|
-        EXCLUDED_KEYS.each { |key| hash.delete(key) }
-      end
-    end
-
     def key
       if selector['class']
         ".#{selector['class'].gsub(' ', '.')}"
@@ -22,12 +16,23 @@ module StyleCop
       end
     end
 
-    def ==(other)
-      SelectorDifference.new(self, other).empty?
+    def representation
+      clean_key = key.gsub(".style-cop-pattern", "")
+      return { clean_key => computed_style } if children.empty?
+      children_hash = children.map(&:representation).inject({}) { |hash, h| hash.merge!(h) }
+      Hash[children_hash.map { |key, value| ["#{clean_key} #{key}", value] }].merge(
+        clean_key => computed_style
+      )
     end
 
-    def structure
-      { key.gsub(".style-cop-pattern", "") => children.map(&:structure) }
+    private
+
+    attr_reader :selector
+
+    def computed_style
+      style_hash.tap do |hash|
+        EXCLUDED_KEYS.each { |key| hash.delete(key) }
+      end
     end
 
     def children
@@ -36,16 +41,16 @@ module StyleCop
       end
     end
 
-    private
-
-    attr_reader :selector
-
     def style_hash
       Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }]
     end
 
     def css
-      session.evaluate_script(computed_style_script)["cssText"]
+      if computed_style = session.evaluate_script(computed_style_script)
+        computed_style["cssText"]
+      else
+        raise RuntimeError.new("Can't find css for #{selector.key}")
+      end
     end
 
     def session
@@ -54,7 +59,7 @@ module StyleCop
 
     def computed_style_script
       %{
-        var node = document.evaluate('/#{selector.path}',
+        var node = document.evaluate("/#{selector.path}",
             document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue
         window.getComputedStyle(node);
       }

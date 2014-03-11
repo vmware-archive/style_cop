@@ -6,22 +6,17 @@ module StyleCop
     let(:styleguide_selector) { double }
     subject { SelectorDifference.new(selector, styleguide_selector) }
 
-    describe "#error_message" do 
+    describe "#error_message" do
       before do
         allow(selector).to receive(:key).and_return(".structure")
-        allow(selector).to receive(:computed_style).and_return(selector_css)
-        allow(selector).to receive(:structure).and_return(selector_structure)
-        allow(styleguide_selector).to receive(:computed_style).and_return(styleguide_css)
-        allow(styleguide_selector).to receive(:structure).and_return(styleguide_structure)
+        allow(selector).to receive(:representation).and_return(selector_representation)
+        allow(styleguide_selector).to receive(:representation).and_return(styleguide_representation)
       end
 
       context "css" do
-        let(:selector_structure) { {".selector" => []} }
-        let(:styleguide_structure) { {".selector" => []} }
-
         context "missing styleguide css" do
-          let(:selector_css) { {"a"=>"b"} }
-          let(:styleguide_css) { {"a"=>"b", "font-size"=>"100px"} }
+          let(:selector_representation) { { ".selector" => {"a"=>"b"} } }
+          let(:styleguide_representation) { { ".selector" => {"a"=>"b", "font-size"=>"100px"} } }
 
           it "shows what css the element is missing" do
             message = "The .structure element is missing the following css: font-size: 100px"
@@ -30,8 +25,8 @@ module StyleCop
         end
 
         context "extra css not in styleguide" do
-          let(:selector_css) { {"a"=>"b", "font-size"=>"100px"} }
-          let(:styleguide_css) { {"a"=>"b"} }
+          let(:selector_representation) { { ".selector" => {"a"=>"b", "font-size"=>"100px"} } }
+          let(:styleguide_representation) { { ".selector" => {"a"=>"b"} } }
 
           it "shows what extra css is present" do
             message = "The .structure element has the following extra css: font-size: 100px"
@@ -40,36 +35,33 @@ module StyleCop
         end
 
         context "missing css in the styleguide and has extra css not in the styleguide" do
-          let(:selector_css) { {"a"=>"b", "font-size"=>"100px"} }
-          let(:styleguide_css) { {"a"=>"b", "font-size"=>"80px"} }
+          let(:selector_representation) { {".selector" => { "font-size"=>"100px"} } }
+          let(:styleguide_representation) { {".selector" => { "font-size"=>"80px"} } }
 
           it "shows what extra css is present" do
-            message = "The .structure element is missing the following css: font-size: 80px, The .structure element has the following extra css: font-size: 100px"
-            expect(subject.error_message).to eq message
+            message = "The .structure element has the following extra css: font-size: 100px, The .structure element is missing the following css: font-size: 80px"
+            expect(subject.error_message).to include message
           end
         end
       end
 
       context "structure" do
-        let(:selector_css) { {"a"=>"b"} }
-        let(:styleguide_css) { {"a"=>"b"} }
-
         context "missing styleguide structure" do
-          let(:selector_structure) { {".selector" => []} }
-          let(:styleguide_structure) { {".selector" => [{".missing" => []}]} }
+          let(:selector_representation) { { ".selector .child" => {} } }
+          let(:styleguide_representation) { { ".selector .child" => {}, ".selector .child .missing" => {} } }
 
           it "shows what structure is missing from the element" do
-            message = "The .structure element is missing the following structure piece: .missing"
+            message = "The .structure element is missing the following structure piece: .selector .child .missing"
             expect(subject.error_message).to eq message
           end
         end
 
         context "extra structure not in styleguide" do
-          let(:selector_structure) { {".selector" => [{".extra" => []}]} }
-          let(:styleguide_structure) { {".selector" => []} }
+          let(:selector_representation) { { ".selector .child" => {}, ".selector .child .extra" => {} } }
+          let(:styleguide_representation) { { ".selector .child" => {} } }
 
           it "shows what extra structure is present" do
-            message = "The .structure element has the following extra structure piece: .extra"
+            message = "The .structure element has the following extra structure piece: .selector .child .extra"
             expect(subject.error_message).to eq message
           end
         end

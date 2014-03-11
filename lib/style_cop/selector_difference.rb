@@ -11,9 +11,7 @@ module StyleCop
     end
 
     def empty?
-      selector.computed_style == other_selector.computed_style &&
-        selector.structure == other_selector.structure &&
-        selector.children == other_selector.children
+      selector.representation == other_selector.representation
     end
 
     def error_message
@@ -25,33 +23,34 @@ module StyleCop
     attr_reader :selector, :other_selector
 
     def structure_errors
-      extra = structure_difference(other_selector, selector)
-      extra = "The #{selector.key} #{EXTRA_STRUCTURE_TEXT}: #{extra}" if extra
-      missing = structure_difference(selector, other_selector)
-      missing = "The #{selector.key} #{MISSING_STRUCTURE_TEXT}: #{missing}" if missing
-      errors = [extra, missing].compact
-      errors.empty? ? [] : [errors.join(", ")]
+      errors = []
+      extra_elements = selector.representation.keys - other_selector.representation.keys
+      missing_elements = other_selector.representation.keys - selector.representation.keys
+      errors << "The #{selector.key} #{EXTRA_STRUCTURE_TEXT}: #{extra_elements.join(", ")}" if extra_elements.any?
+      errors << "The #{selector.key} #{MISSING_STRUCTURE_TEXT}: #{missing_elements.join(", ")}" if missing_elements.any?
+      errors
     end
 
     def css_errors
-      extra = css_difference(other_selector, selector)
-      extra = "The #{selector.key} #{EXTRA_CSS_TEXT}: #{extra}" if extra
-      missing = css_difference(selector, other_selector)
-      missing = "The #{selector.key} #{MISSING_CSS_TEXT}: #{missing}" if missing
-      errors = [missing, extra].compact
-      errors.empty? ? [] : [errors.join(", ")]
+      errors = []
+      css_difference(other_selector, selector).each do |path, extra_css|
+        errors << "The #{selector.key} #{EXTRA_CSS_TEXT}: #{extra_css.map{|k,v| "#{k}: #{v}"}.join(', ')}" unless extra_css.empty?
+      end
+      css_difference(selector, other_selector).each do |path, extra_css|
+        errors << "The #{selector.key} #{MISSING_CSS_TEXT}: #{extra_css.map{|k,v| "#{k}: #{v}"}.join(', ')}" unless extra_css.empty?
+      end
+      errors
     end
 
-    def css_difference(test_case, styleguide)
-      difference = (Hash[styleguide.computed_style.to_a - test_case.computed_style.to_a]).
-        map{|k,v| "#{k}: #{v}"}.join(', ')
-      difference.empty? ? nil :difference
-    end
-
-    def structure_difference(test_case, styleguide)
-      difference = (styleguide.structure.values.flatten - test_case.structure.values.flatten).
-        map(&:keys).flatten.join(', ')
-      difference.empty? ? nil : difference
+    def css_difference(selector1, selector2)
+      difference = {}
+      selector2_representation = selector2.representation
+      selector1.representation.each do |path, selector1_css|
+        if selector2_css = selector2_representation[path]
+          difference[path] = Hash[selector2_css.to_a - selector1_css.to_a]
+        end
+      end
+      difference
     end
   end
 end

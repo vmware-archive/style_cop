@@ -2,45 +2,6 @@ require "spec_helper"
 
 module StyleCop
   describe Selector, style_cop: true do
-    describe "#computed_style" do
-      let(:page) { FakePage.new(html) }
-
-      let(:html) do
-        create_html({
-          style: %{
-            .selector { font-size: 4px; }
-            .selector.second { font-size: 6px; }
-          },
-            body: %{
-            <div class="selector first"></div>
-            <div class="selector second"></div>
-          }
-        })
-      end
-
-      it "returns a hash containing computed style" do
-        selector = Selector.new(page.find('.selector.first'))
-        expect(selector.computed_style["font-size"]).to eq("4px")
-      end
-
-      it "returns the correct style for elements with the same class" do
-        selector = Selector.new(page.find('.selector.second'))
-        expect(selector.computed_style["font-size"]).to eq("6px")
-      end
-
-      context "excluded keys" do
-        let(:selector) { Selector.new(page.find(".selector.first")) }
-        subject { selector.computed_style }
-
-        it { should_not have_key("width") }
-        it { should_not have_key("height") }
-        it { should_not have_key("top") }
-        it { should_not have_key("bottom") }
-        it { should_not have_key("right") }
-        it { should_not have_key("left") }
-      end
-    end
-
     describe "#key" do
       let(:page) { FakePage.new(selector_html) }
       let(:capybara_selector) { page.find("span") }
@@ -77,37 +38,13 @@ module StyleCop
       end
     end
 
-    describe "#==" do
-      let(:selector) { Selector.new(double) }
-
-      before do
-        allow(SelectorDifference).to receive(:new).and_return(selector_difference)
-      end
-
-      context "an emtpy selector difference" do
-        let(:selector_difference) { double(SelectorDifference, empty?: true) }
-
-        it "returns true" do
-          expect(selector).to eq double(Selector)
-        end
-      end
-
-      context "a non empty selector difference" do
-        let(:selector_difference) { double(SelectorDifference, empty?: false) }
-
-        it "returns false" do
-          expect(selector).to_not eq double(Selector)
-        end
-      end
-    end
-
-    describe "#structure" do
+    describe "#representation" do
       let(:html) do
         create_html({
           body: %{
-              <div class="selector style-cop-pattern">
-                <div class="child1">
-                  <div class="child3 style-cop-pattern"></div>
+              <div class="selector style-cop-pattern" style="font-size:16px">
+                <div class="child1" style="font-size:24px">
+                  <div class="child3 style-cop-pattern" style="font-size:36px"></div>
                 </div>
                 <div class="child2"></div>
               </div>
@@ -118,13 +55,34 @@ module StyleCop
       let(:page) { FakePage.new(html) }
       let(:selector) { Selector.new page.find(".selector") }
 
-      it "returns a hash with its key and children" do
-        expect(selector.structure).to eq({
-          ".selector" => [
-            {".child1" => [{".child3" => [] }]},
-            {".child2" => []}
-          ]
-        })
+      it "returns a hash with structure keys andd css values" do
+        expect(selector.representation.keys.sort).to eq(
+          [".selector", ".selector .child1", ".selector .child1 .child3", ".selector .child2"]
+        )
+        expect(selector.representation[".selector"]["font-size"]).to eq("16px")
+        expect(selector.representation[".selector .child1"]["font-size"]).to eq("24px")
+        expect(selector.representation[".selector .child1 .child3"]["font-size"]).to eq("36px")
+        expect(selector.representation[".selector .child2"]["font-size"]).to eq("16px")
+      end
+
+      context "excluded keys in style" do
+        let(:html) do
+          create_html({
+            body: %{
+                <div class="selector"></div>
+            }
+          })
+        end
+
+        let(:selector) { Selector.new(page.find(".selector")) }
+        subject { selector.representation['.selector'] }
+
+        it { should_not have_key("width") }
+        it { should_not have_key("height") }
+        it { should_not have_key("top") }
+        it { should_not have_key("bottom") }
+        it { should_not have_key("right") }
+        it { should_not have_key("left") }
       end
     end
   end
