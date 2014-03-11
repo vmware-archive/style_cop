@@ -16,6 +16,8 @@ What's the least amount of work we can do to in/vadidate this hypothesis?
 
 ## Installation
 
+Note: StyleCop depends on CapybaraWebkit so you will need to make sure that installs first: https://github.com/thoughtbot/capybara-webkit
+
 Put into your gemfile
 
     gem style_cop
@@ -25,59 +27,20 @@ Bundle
     $ bundle
     
 ## Getting Started
-Find a font-end pattern you want to enforce. 
 
-For example, here is an example piece of markup (a feedback widget with two avatars):
+To test a selector on your page matches the same selector on your styleguide
+you will need to do two things:
 
-	<article class="feedback">
-      <h2 class="feedback-title"></h2>
-	  <div class="content-section">
-	    <section class="avatars">
-	   	  <div class="avatar recipient">
-	   	  	<img src="http://placekitten.com/100/100" alt="A cute burmese kitten!" />
-		  </div>
-		  <div class="avatar provider">
-	   	  	<img src="http://placekitten.com/50/50" alt="An abyssinian kitty!" />		  </div>
-	    </section>
-	  </div>
-	</article>
+1. Add the class 'style-cop-pattern' to the selector in your styleguide
 
-To enforce the markup, you need Capybara installed. Then in a feature test, register your rules:
+2. Add code like this somewhere in an integration test:
 
-	register_style_structure_for('.feedback') do
-      has_child '.feedback-title'
-      has_nested_children '.content-section', '.avatars', '.avatar.recipient'
-      has_nested_children '.content-section', '.avatars', '.avatar.provider'
+'''
+  context "some context", style_cop: true do
+    it "tests something" do
+      visit "/some/path"
+      selector = page.find(".your-selector")
+      expect(selector).to match_styleguide(styleguide_page("/your/styleguide/path"))
     end
- 
-Once your rules are registered, you can then enforce the rules on ANY page Capybara looks at with:
-
-	assert_style_structure_for('.feedback')
-	
-Your tests now will break if the markup doesn't follow the registered structure!
-	
-## Example
-Here is an example file setup:
-
-feedback_style_spec.rb
-
-	register_style_structure_for('.feedback') do
-      has_child '.anchor'
-      has_nested_children '.content-section', '.avatars', '.avatar.recipient'
-      has_nested_children '.content-section', '.avatars', '.avatar.provider'
-    end
-
-	feature 'Feedback' do
-	  scenario "testing css class structure" do
-	    When "I visit my feedback page"
-	    Then "I see the feedback avatar pattern"
-	  end
-		
-	  def i_visit_my_feedback_page
-	    visit feedback_path
-	  end
-	  
-	  def i_see_the_feedback_avatar_pattern
-	  	assert_style_structure_for('.feedback')
-	  end
-	end
+  end
+'''

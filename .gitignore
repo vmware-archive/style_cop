@@ -1,3 +1,3 @@
-style_cop-0.0.1.gem
+style_cop-*.gem
 .DS_Store
 Gemfile.lock
