@@ -35,12 +35,12 @@ you will need to do two things:
 
 2. Add code like this somewhere in an integration test:
 
-'''
-  context "some context", style_cop: true do
-    it "tests something" do
-      visit "/some/path"
-      selector = page.find(".your-selector")
-      expect(selector).to match_styleguide(styleguide_page("/your/styleguide/path"))
+```
+    context "some context", style_cop: true do
+      it "tests something" do
+        visit "/some/path"
+        selector = page.find(".your-selector")
+        expect(selector).to match_styleguide(styleguide_page("/your/styleguide/path"))
+      end
     end
-  end
-'''
+```
