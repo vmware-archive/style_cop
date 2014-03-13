@@ -44,3 +44,8 @@ you will need to do two things:
       end
     end
 ```
+
+## Developer Notes
+
+If you find there are css elements that are giving you failures that you want to ignore you can
+open up selector.rb and add those css elements to the EXCLUDED_KEYS constant.

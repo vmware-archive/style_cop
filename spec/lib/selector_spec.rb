@@ -83,6 +83,8 @@ module StyleCop
         it { should_not have_key("bottom") }
         it { should_not have_key("right") }
         it { should_not have_key("left") }
+        it { should_not have_key("-webkit-perspective-origin") }
+        it { should_not have_key("-webkit-transform-origin") }
       end
     end
   end

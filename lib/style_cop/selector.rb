@@ -1,6 +1,9 @@
 module StyleCop
   class Selector
-    EXCLUDED_KEYS = ["width", "height", "top", "bottom", "right", "left"]
+    EXCLUDED_KEYS = [
+      "width", "height", "top", "bottom", "right", "left",
+      "-webkit-perspective-origin", "-webkit-transform-origin"
+    ]
 
     def initialize(selector)
       @selector = selector
