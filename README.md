@@ -1,5 +1,6 @@
 # style_cop
-Style Cop helps you enforce markup structure for front-end patterns via Rspec and Capybara. You spent all that time making your CSS play nicely. If all developers use the markup correctly, then it will render beautifully! 
+Style Cop helps you enforce markup structure for front-end patterns via Rspec and Capybara. You spent all that time making your CSS play nicely. If all developers use the markup correctly,
+then it will render beautifully!
 
 ## Project Management
 See the public [Pivotal Tracker project][] to file bugs, feature requests, or to contribute.
@@ -24,11 +25,11 @@ Note: StyleCop depends on CapybaraWebkit so you will need to make sure that inst
 Put into your gemfile
 
     gem style_cop
-    
+
 Bundle
 
     $ bundle
-    
+
 ## Getting Started
 
 To test a selector on your page matches the same selector on your styleguide

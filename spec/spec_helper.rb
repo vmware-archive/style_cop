@@ -6,7 +6,6 @@ require "style_cop"
 require "rspec"
 require "capybara"
 require "capybara-webkit"
-include Capybara::DSL
 require "sinatra"
 
 ENV["test_run"] = true.to_s

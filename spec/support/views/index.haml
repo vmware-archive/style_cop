@@ -1,3 +1,14 @@
-.simple-pattern
-  .test Hello, World!
-  .icon{style: "color: blue"} X
+%head
+  %title The App Under Test
+  %link{rel: 'stylesheet', href: '/stylesheets/acceptance_styles.css'}
+
+%body
+  .caption-box-with-icon
+    .test Invalid caption box with wrong color icon
+    .caption-box-icon{style: "color: blue"} X
+
+  .caption-box-with-icon
+    .test Valid caption box
+    .caption-box-icon X
+
+  %p.really-big-text.style-cop-pattern{style: "color: blue"} Really big text that happens to be blue

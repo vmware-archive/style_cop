@@ -1,10 +1,12 @@
 require 'sinatra'
 require 'haml'
 
-get '/' do
-  haml :index
-end
+class AcceptanceApp < Sinatra::Base
+  get '/' do
+    haml :index
+  end
 
-get '/style-guide' do
-  haml :style_guide
+  get '/style-guide' do
+    haml :style_guide
+  end
 end

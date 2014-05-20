@@ -36,7 +36,7 @@ module StyleCop
       let(:page) { FakePage.new(html) }
       let(:selector) { page.all(".selector").first }
       let(:styleguide_selector) { page.find(".selector.style-cop-pattern") }
-      let(:selector_difference) { double(SelectorDifference, empty?: false) }
+      let(:selector_difference) { double(SelectorDifference, conformant?: false) }
 
       it "doesn't pass" do
         expect(selector).to_not match_styleguide(page)

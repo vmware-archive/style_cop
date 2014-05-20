@@ -2,47 +2,36 @@ require 'spec_helper'
 
 module StyleCop
   describe SelectorDifference do
-    let(:selector) { double }
-    let(:styleguide_selector) { double }
+    let(:selector) { double :selector }
+    let(:styleguide_selector) { double :styleguide_selector }
     subject { SelectorDifference.new(selector, styleguide_selector) }
 
     describe "#error_message" do
       before do
         allow(selector).to receive(:key).and_return(".structure")
         allow(selector).to receive(:representation).and_return(selector_representation)
-        allow(styleguide_selector).to receive(:representation).and_return(styleguide_representation)
+        allow(styleguide_selector).to receive(:rule_based_representation).and_return(styleguide_representation)
       end
 
-      context "css" do
-        context "missing styleguide css" do
-          let(:selector_representation) { { ".selector" => {"a"=>"b"} } }
-          let(:styleguide_representation) { { ".selector" => {"a"=>"b", "font-size"=>"100px"} } }
+      context "missing styleguide css" do
+        let(:selector_representation) { { ".selector" => {"a"=>"b"} } }
+        let(:styleguide_representation) { { ".selector" => {"a"=>"b", "font-size"=>"100px"} } }
 
-          it "shows what css the element is missing" do
-            message = "The .structure element is missing the following css: font-size: 100px"
+        it "shows what css the element is missing" do
+          message = "The .structure element is missing the following css: font-size: 100px"
+          expect(subject.error_message).to eq message
+        end
+
+        context "when a css attribute is present but has a different value" do
+          let(:selector_representation) { { ".selector" => {"color"=>"red"} } }
+          let(:styleguide_representation) { { ".selector" => {"color"=>"green"} } }
+
+          it "shows the non-matching attributes" do
+            message = "The .structure element is missing the following css: color: green"
             expect(subject.error_message).to eq message
           end
         end
 
-        context "extra css not in styleguide" do
-          let(:selector_representation) { { ".selector" => {"a"=>"b", "font-size"=>"100px"} } }
-          let(:styleguide_representation) { { ".selector" => {"a"=>"b"} } }
-
-          it "shows what extra css is present" do
-            message = "The .structure element has the following extra css: font-size: 100px"
-            expect(subject.error_message).to eq message
-          end
-        end
-
-        context "missing css in the styleguide and has extra css not in the styleguide" do
-          let(:selector_representation) { {".selector" => { "font-size"=>"100px"} } }
-          let(:styleguide_representation) { {".selector" => { "font-size"=>"80px"} } }
-
-          it "shows what extra css is present" do
-            message = "The .structure element has the following extra css: font-size: 100px, The .structure element is missing the following css: font-size: 80px"
-            expect(subject.error_message).to include message
-          end
-        end
       end
 
       context "structure" do
@@ -68,7 +57,7 @@ module StyleCop
       end
     end
 
-    describe "#empty?" do
+    describe "#conformant?" do
       let(:first_selector) { Selector.new page.all(".selector").first }
       let(:last_selector) { Selector.new page.all(".selector").last }
       let(:page) { FakePage.new(html) }
@@ -77,6 +66,9 @@ module StyleCop
       context "when two selectors have same css" do
         let(:html) do
           create_html({
+            style: %{
+              .selector { font-size: 100px }
+            },
             body: %{
               <div class="selector"></div>
               <div class="selector"></div>
@@ -85,28 +77,34 @@ module StyleCop
         end
 
         it "returns true" do
-          expect(subject).to be_empty
+          expect(subject).to be_conformant
         end
       end
 
       context "when two selectors don't have same css" do
         let(:html) do
           create_html({
+            style: %{
+              .selector:last-child { font-size: 100px }
+            },
             body: %{
               <div class="selector"></div>
-              <div class="selector" style="font-size: 100px"></div>
+              <div class="selector"></div>
             }
           })
         end
 
         it "returns false" do
-          expect(subject).to_not be_empty
+          expect(subject).to_not be_conformant
         end
       end
 
       context "when two selectors have same structure" do
         let(:html) do
           create_html({
+            style: %{
+              .selector { font-size: 100px }
+            },
             body: %{
               <div class="selector"><div class="child2"></div></div>
               <div class="selector"><div class="child2"></div></div>
@@ -115,7 +113,7 @@ module StyleCop
         end
 
         it "returns true" do
-          expect(subject).to be_empty
+          expect(subject).to be_conformant
         end
       end
 
@@ -130,13 +128,16 @@ module StyleCop
         end
 
         it "returns false" do
-          expect(subject).to_not be_empty
+          expect(subject).to_not be_conformant
         end
       end
 
       context "when two selectors children have same css" do
         let(:html) do
           create_html({
+            style: %{
+              .selector .child2 { font-size: 100px; }
+            },
             body: %{
               <div class="selector"><div class="child2"></div></div>
               <div class="selector"><div class="child2"></div></div>
@@ -145,22 +146,25 @@ module StyleCop
         end
 
         it "returns false" do
-          expect(subject).to be_empty
+          expect(subject).to be_conformant
         end
       end
 
       context "when two selectors children don't have same css" do
         let(:html) do
           create_html({
+            style: %{
+              .selector:last-child .child2 { font-size: 100px; }
+            },
             body: %{
               <div class="selector"><div class="child2"></div></div>
-              <div class="selector"><div class="child2" style="font-size:100px"></div></div>
+              <div class="selector"><div class="child2"></div></div>
             }
           })
         end
 
         it "returns false" do
-          expect(subject).to_not be_empty
+          expect(subject).to_not be_conformant
         end
       end
     end

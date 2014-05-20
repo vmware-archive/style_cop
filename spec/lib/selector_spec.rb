@@ -55,7 +55,7 @@ module StyleCop
       let(:page) { FakePage.new(html) }
       let(:selector) { Selector.new page.find(".selector") }
 
-      it "returns a hash with structure keys andd css values" do
+      it "returns a hash with structure keys and css values" do
         expect(selector.representation.keys.sort).to eq(
           [".selector", ".selector .child1", ".selector .child1 .child3", ".selector .child2"]
         )
@@ -85,6 +85,54 @@ module StyleCop
         it { should_not have_key("left") }
         it { should_not have_key("-webkit-perspective-origin") }
         it { should_not have_key("-webkit-transform-origin") }
+      end
+    end
+
+    describe "#rule_based_representation" do
+      let(:html) do
+        create_html({
+          style: %{
+            .child3 { color: red }
+          },
+            body: %{
+              <div class="selector style-cop-pattern" style="font-size:16px">
+                <div class="child1" style="font-size:24px">
+                  <div class="child3 style-cop-pattern" style="font-size:36px"></div>
+                </div>
+                <div class="child2"></div>
+              </div>
+          }
+        })
+      end
+
+      let(:page) { FakePage.new(html) }
+      let(:selector) { Selector.new page.find(".child3") }
+
+      it "returns a hash with structure keys and css values" do
+        expect(selector.representation.keys.sort).to eq(
+          [".child3"]
+        )
+        expect(selector.rule_based_representation['.child3'].keys.length).to eq 1
+        expect(selector.rule_based_representation['.child3']['color']).to eq 'rgb(255, 0, 0)'
+      end
+
+      context "there is no css" do
+        let(:html) do
+          create_html({
+            body: %{
+                <div class="selector style-cop-pattern" style="font-size:16px">
+                  <div class="child1" style="font-size:24px">
+                    <div class="child3 style-cop-pattern" style="font-size:36px"></div>
+                  </div>
+                  <div class="child2"></div>
+                </div>
+            }
+          })
+        end
+
+        it "returns a hash with structure keys and no css values" do
+          expect(selector.rule_based_representation['.child3'].keys.length).to eq 0
+        end
       end
     end
   end
