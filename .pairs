@@ -2,6 +2,8 @@ pairs:
   dt: David Tegdin; dtegdin
   wp: Ward Penney; wpenney
   jn: Jordi Noguera; jordi
+  de: David Edwards; dedwards
+  dd: David Dening; ddening
 
 email:
   prefix: style_cop+pair
