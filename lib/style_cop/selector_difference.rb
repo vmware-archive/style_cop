@@ -24,8 +24,8 @@ module StyleCop
 
     def structure_errors
       errors = []
-      extra_elements = selector.representation.keys - gold_standard_selector.rule_based_representation.keys
-      missing_elements = gold_standard_selector.rule_based_representation.keys - selector.representation.keys
+      extra_elements = selector.full_style_representation.keys - gold_standard_selector.relevant_style_representation.keys
+      missing_elements = gold_standard_selector.relevant_style_representation.keys - selector.full_style_representation.keys
       errors << "The #{selector.key} #{EXTRA_STRUCTURE_TEXT}: #{extra_elements.join(", ")}" if extra_elements.any?
       errors << "The #{selector.key} #{MISSING_STRUCTURE_TEXT}: #{missing_elements.join(", ")}" if missing_elements.any?
       errors
@@ -41,8 +41,8 @@ module StyleCop
 
     def css_difference(selector1, selector2)
       difference = {}
-      selector2_representation = selector2.rule_based_representation
-      selector1.representation.each do |path, selector1_css|
+      selector2_representation = selector2.relevant_style_representation
+      selector1.full_style_representation.each do |path, selector1_css|
         if selector2_css = selector2_representation[path]
           difference[path] = Hash[selector2_css.to_a - selector1_css.to_a]
         end

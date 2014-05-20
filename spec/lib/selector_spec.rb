@@ -38,7 +38,7 @@ module StyleCop
       end
     end
 
-    describe "#representation" do
+    describe "#full_style_representation" do
       let(:html) do
         create_html({
           body: %{
@@ -56,17 +56,17 @@ module StyleCop
       let(:selector) { Selector.new page.find(".selector") }
 
       it "returns a hash with structure keys and css values" do
-        expect(selector.representation.keys.sort).to eq(
+        expect(selector.full_style_representation.keys.sort).to eq(
           [".selector", ".selector .child1", ".selector .child1 .child3", ".selector .child2"]
         )
-        expect(selector.representation[".selector"]["font-size"]).to eq("16px")
-        expect(selector.representation[".selector .child1"]["font-size"]).to eq("24px")
-        expect(selector.representation[".selector .child1 .child3"]["font-size"]).to eq("36px")
-        expect(selector.representation[".selector .child2"]["font-size"]).to eq("16px")
+        expect(selector.full_style_representation[".selector"]["font-size"]).to eq("16px")
+        expect(selector.full_style_representation[".selector .child1"]["font-size"]).to eq("24px")
+        expect(selector.full_style_representation[".selector .child1 .child3"]["font-size"]).to eq("36px")
+        expect(selector.full_style_representation[".selector .child2"]["font-size"]).to eq("16px")
       end
     end
 
-    describe "#rule_based_representation" do
+    describe "#relevant_style_representation" do
       let(:html) do
         create_html({
           style: %{
@@ -87,11 +87,11 @@ module StyleCop
       let(:selector) { Selector.new page.find(".child3") }
 
       it "returns a hash with structure keys and css values" do
-        expect(selector.representation.keys.sort).to eq(
+        expect(selector.relevant_style_representation.keys.sort).to eq(
           [".child3"]
         )
-        expect(selector.rule_based_representation['.child3'].keys.length).to eq 1
-        expect(selector.rule_based_representation['.child3']['color']).to eq 'rgb(255, 0, 0)'
+        expect(selector.relevant_style_representation['.child3'].keys.length).to eq 1
+        expect(selector.relevant_style_representation['.child3']['color']).to eq 'rgb(255, 0, 0)'
       end
 
       context "there is no css" do
@@ -109,7 +109,7 @@ module StyleCop
         end
 
         it "returns a hash with structure keys and no css values" do
-          expect(selector.rule_based_representation['.child3'].keys.length).to eq 0
+          expect(selector.relevant_style_representation['.child3'].keys.length).to eq 0
         end
       end
     end

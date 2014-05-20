@@ -15,21 +15,24 @@ module StyleCop
       end
     end
 
-    def representation
-      clean_key = key.gsub(".style-cop-pattern", "")
-      return { clean_key => ComputedStylesHash.new(session, key, selector.path) } if children.empty?
-      children_hash = children.map(&:representation).inject({}) { |hash, h| hash.merge!(h) }
-      Hash[children_hash.map { |key, value| ["#{clean_key} #{key}", value] }].merge(
-        clean_key => ComputedStylesHash.new(session, key, selector.path)
-      )
+    def full_style_representation
+      representation(FullStylesHash)
     end
 
-    def rule_based_representation
+    def relevant_style_representation
+      representation(RelevantStylesHash)
+    end
+
+    def representation(style_hash_class)
       clean_key = key.gsub(".style-cop-pattern", "")
-      return { clean_key => ApplicableStylesHash.new(session, key, selector.path) } if children.empty?
-      children_hash = children.map(&:rule_based_representation).inject({}) { |hash, h| hash.merge!(h) }
+      return { clean_key => style_hash_class.new(session, key, selector.path) } if children.empty?
+
+      children_hash = children.map do |child|
+        child.representation(style_hash_class)
+      end.inject({}) { |hash, h| hash.merge!(h) }
+
       Hash[children_hash.map { |key, value| ["#{clean_key} #{key}", value] }].merge(
-        clean_key => ApplicableStylesHash.new(session, key, selector.path)
+        clean_key => style_hash_class.new(session, key, selector.path)
       )
     end
 
@@ -47,7 +50,7 @@ module StyleCop
       selector.session
     end
 
-    class ComputedStylesHash < Hash
+    class FullStylesHash < Hash
 
       def initialize(session, key, path)
         @session = session
@@ -82,7 +85,7 @@ module StyleCop
       end
     end
 
-    class ApplicableStylesHash < ComputedStylesHash
+    class RelevantStylesHash < FullStylesHash
 
       private
 

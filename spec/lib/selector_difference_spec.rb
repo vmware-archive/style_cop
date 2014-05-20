@@ -9,8 +9,8 @@ module StyleCop
     describe "#error_message" do
       before do
         allow(selector).to receive(:key).and_return(".structure")
-        allow(selector).to receive(:representation).and_return(selector_representation)
-        allow(styleguide_selector).to receive(:rule_based_representation).and_return(styleguide_representation)
+        allow(selector).to receive(:full_style_representation).and_return(selector_representation)
+        allow(styleguide_selector).to receive(:relevant_style_representation).and_return(styleguide_representation)
       end
 
       context "missing styleguide css" do
