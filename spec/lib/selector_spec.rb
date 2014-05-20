@@ -64,28 +64,6 @@ module StyleCop
         expect(selector.representation[".selector .child1 .child3"]["font-size"]).to eq("36px")
         expect(selector.representation[".selector .child2"]["font-size"]).to eq("16px")
       end
-
-      context "excluded keys in style" do
-        let(:html) do
-          create_html({
-            body: %{
-                <div class="selector"></div>
-            }
-          })
-        end
-
-        let(:selector) { Selector.new(page.find(".selector")) }
-        subject { selector.representation['.selector'] }
-
-        it { should_not have_key("width") }
-        it { should_not have_key("height") }
-        it { should_not have_key("top") }
-        it { should_not have_key("bottom") }
-        it { should_not have_key("right") }
-        it { should_not have_key("left") }
-        it { should_not have_key("-webkit-perspective-origin") }
-        it { should_not have_key("-webkit-transform-origin") }
-      end
     end
 
     describe "#rule_based_representation" do

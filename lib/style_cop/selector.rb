@@ -1,11 +1,5 @@
 module StyleCop
   class Selector
-    EXCLUDED_KEYS = [
-      "width", "height", "top", "bottom", "right", "left",
-      "-webkit-perspective-origin", "-webkit-transform-origin",
-      "border-bottom-color", "border-left-color", "border-right-color", "border-top-color",
-      "outline-color", "-webkit-column-rule-color", "-webkit-text-emphasis-color", "-webkit-text-fill-color", "-webkit-text-stroke-color"
-    ]
 
     def initialize(selector)
       @selector = selector
@@ -23,10 +17,10 @@ module StyleCop
 
     def representation
       clean_key = key.gsub(".style-cop-pattern", "")
-      return { clean_key => computed_style } if children.empty?
+      return { clean_key => computed_style_hash } if children.empty?
       children_hash = children.map(&:representation).inject({}) { |hash, h| hash.merge!(h) }
       Hash[children_hash.map { |key, value| ["#{clean_key} #{key}", value] }].merge(
-        clean_key => computed_style
+        clean_key => computed_style_hash
       )
     end
 
@@ -42,12 +36,6 @@ module StyleCop
     private
 
     attr_reader :selector
-
-    def computed_style
-      computed_style_hash.tap do |hash|
-        EXCLUDED_KEYS.each { |key| hash.delete(key) }
-      end
-    end
 
     def children
       selector.all(:xpath, "#{selector.path}/*").map do |child|
