@@ -34,5 +34,13 @@ describe "real use cases", style_cop: true do
     big_text_with_extra_attribute = page.find(".really-big-text", text: /Really big text that happens to be blue/)
     expect(big_text_with_extra_attribute).to match_styleguide(styleguide_page("http://localhost:4567/style-guide"))
   end
+
+  it "permits different numbers of identical children than the gold standard" do
+    valid_styled_list = page.find(".styled-list", text: /which should be fine/i)
+    expect(valid_styled_list).to match_styleguide(styleguide_page("http://localhost:4567/style-guide"))
+
+    invalid_styled_list = page.find(".styled-list", text: /which isn't okay/i)
+    expect(invalid_styled_list).to_not match_styleguide(styleguide_page("http://localhost:4567/style-guide"))
+  end
 end
 

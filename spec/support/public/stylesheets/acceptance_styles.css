@@ -6,3 +6,5 @@
 .really-big-text{
   font-size: 72px;
 }
+
+.styled-list { text-transform: uppercase }
