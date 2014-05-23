@@ -8,3 +8,5 @@
 }
 
 .styled-list { text-transform: uppercase }
+
+h1 { font-size: 14px; font-family: monospace; line-height: 32px; color: black }

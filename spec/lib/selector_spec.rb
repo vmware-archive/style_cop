@@ -15,6 +15,26 @@ module StyleCop
         it "returns the classes separated by a dot" do
           expect(selector.key).to eq(".selector.other-selector")
         end
+
+        context "for an element with just the class '.style-cop-pattern" do
+          let(:selector_html) do
+            create_html(body: "<span class='style-cop-pattern' id='not_ignored'></span>")
+          end
+
+          it "does not return the style-cop-pattern class as the key" do
+            expect(selector.key).to eq("#not_ignored")
+          end
+        end
+
+        context "for an element with the '.style-cop-pattern' class and another class" do
+          let(:selector_html) do
+            create_html(body: "<span class='style-cop-pattern something-else' id='ignored'></span>")
+          end
+
+          it "removes 'style-cop-pattern' from the key" do
+            expect(selector.key).to eq(".something-else")
+          end
+        end
       end
 
       context "for an id" do

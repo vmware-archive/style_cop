@@ -16,7 +16,7 @@ module StyleCop
       let(:styleguide) { StyleGuide.new(styleguide_page) }
 
       it "finds elements in the styleguide by key" do
-        expect(styleguide.find(".selector.first").key).to eq(".selector.first.style-cop-pattern")
+        expect(styleguide.find(".selector.first").key).to eq(".selector.first")
       end
     end
   end

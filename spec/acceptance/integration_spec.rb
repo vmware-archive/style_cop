@@ -42,5 +42,13 @@ describe "real use cases", style_cop: true do
     invalid_styled_list = page.find(".styled-list", text: /which isn't okay/i)
     expect(invalid_styled_list).to_not match_styleguide(styleguide_page("http://localhost:4567/style-guide"))
   end
+
+  it "validates tags that match the styleguide" do
+    valid_h1 = page.find("h1", text: /This h1 has the right styles/i)
+    expect(valid_h1).to match_styleguide(styleguide_page("http://localhost:4567/style-guide"))
+
+    invalid_h1_font_size = page.find("h1", text: /This h1 has the wrong font-size styles/i)
+    expect(invalid_h1_font_size).to_not match_styleguide(styleguide_page("http://localhost:4567/style-guide"))
+  end
 end
 

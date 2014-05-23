@@ -6,8 +6,8 @@ module StyleCop
     end
 
     def key
-      if selector['class']
-        ".#{selector['class'].gsub(' ', '.')}"
+      if selector['class'] && selector['class'] != 'style-cop-pattern'
+        ".#{selector['class'].gsub(' ', '.')}".gsub(".style-cop-pattern", "")
       elsif selector['id']
         "##{selector['id']}"
       else
@@ -24,15 +24,14 @@ module StyleCop
     end
 
     def representation(style_hash_class)
-      clean_key = key.gsub(".style-cop-pattern", "")
-      return { clean_key => style_hash_class.new(session, key, selector.path) } if children.empty?
+      return { key => style_hash_class.new(session, key, selector.path) } if children.empty?
 
       children_hash = children.map do |child|
         child.representation(style_hash_class)
       end.inject({}) { |hash, h| hash.merge!(h) }
 
-      Hash[children_hash.map { |key, value| ["#{clean_key} #{key}", value] }].merge(
-        clean_key => style_hash_class.new(session, key, selector.path)
+      Hash[children_hash.map { |child_key, value| ["#{key} #{child_key}", value] }].merge(
+        key => style_hash_class.new(session, key, selector.path)
       )
     end
 
@@ -100,7 +99,7 @@ module StyleCop
         return @relevant_attributes if @relevant_attributes
 
         @relevant_attributes = []
-        applicable_style = @session.evaluate_script(applicable_style_script) 
+        applicable_style = @session.evaluate_script(applicable_style_script)
 
         if applicable_style && !applicable_style.empty?
           (0...applicable_style['length']).each do |i|
