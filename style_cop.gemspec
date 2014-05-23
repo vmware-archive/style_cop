@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.date        = '2014-03-13'
   s.summary     = "Gem for testing style"
   s.description = "Gem for testing style"
-  s.authors     = ["Ward Penney", "David Tengdin", "Jordi Noguera"]
+  s.authors     = ["Ward Penney", "David Tengdin", "Jordi Noguera", "David Edwards", "David Dening"]
   s.email       = 'commoncode@pivotallabs.com'
   s.files       = `git ls-files`.split("\n")
   s.homepage    = 'http://rubygems.org/gems/style_cop'
