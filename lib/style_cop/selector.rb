@@ -61,7 +61,7 @@ module StyleCop
       private
 
       def build_hash
-        attribute_value_pairs = computed_css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }
+        attribute_value_pairs = computed_css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/, 2) }
         attribute_value_pairs.each do |attribute, value|
           self[attribute] = value
         end

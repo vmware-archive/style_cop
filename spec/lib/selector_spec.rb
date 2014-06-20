@@ -63,7 +63,7 @@ module StyleCop
         create_html({
           body: %{
               <div class="selector style-cop-pattern" style="font-size:16px">
-                <div class="child1" style="font-size:24px">
+                <div class="child1" style="font-size:24px; background: url(http://placehold.it/350x150) no-repeat;">
                   <div class="child3 style-cop-pattern" style="font-size:36px"></div>
                 </div>
                 <div class="child2"></div>
@@ -81,6 +81,8 @@ module StyleCop
         )
         expect(selector.full_style_representation[".selector"]["font-size"]).to eq("16px")
         expect(selector.full_style_representation[".selector .child1"]["font-size"]).to eq("24px")
+        expect(selector.full_style_representation[".selector .child1"]["background-image"]).to eq("url(http://placehold.it/350x150)")
+        expect(selector.full_style_representation[".selector .child1"]["background-repeat"]).to eq("no-repeat")
         expect(selector.full_style_representation[".selector .child1 .child3"]["font-size"]).to eq("36px")
         expect(selector.full_style_representation[".selector .child2"]["font-size"]).to eq("16px")
       end
