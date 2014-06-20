@@ -45,7 +45,7 @@ module StyleCop
     end
 
     def style_hash
-      Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/) }]
+      Hash[css.split(/\s*;\s*/).map { |s| s.split(/\s*:\s*/, 2) }]
     end
 
     def css
